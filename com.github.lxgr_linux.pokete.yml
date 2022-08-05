@@ -1,8 +1,8 @@
 app-id: com.github.lxgr_linux.pokete
-# To kill and start the music threads, pygobject is needed which needs the GTK libraries
-runtime: org.gnome.Platform
-runtime-version: '42'
-sdk: org.gnome.Sdk
+runtime: org.freedesktop.Platform
+runtime-version: '21.08'
+sdk: org.freedesktop.Sdk
+sdk-extensions: ["org.freedesktop.Sdk.Extension.golang"]
 command: pokete
 
 finish-args:
@@ -25,28 +25,61 @@ cleanup:
   - "/.github"
   - "/*.md"
   - "/.*"
+  - "/bash"
+  - "/gen_wiki.py"
   - "/Pipfile*"
+  - "/prepare_pages.py"
+  - "/playsound/libplaysound.dll"
+  - "/playsound/libplaysound.osx.so"
+  - "/src/github.com"
+  - "/wrapper.sh"
 
 modules:
-  - "python3-modules.json"
-
-  # The actual game files
   - name: pokete
     buildsystem: simple
+    build-options:
+      append-path: /usr/lib/sdk/golang/bin
+      env:
+        GOBIN: /app/bin
+        GO111MODULE: off
+        GOPATH: /run/build/pokete/go-modules
     build-commands:
+      - cd playsound && go build -ldflags "-s -w" -buildmode=c-shared -o ./libplaysound.so
+
       - "cp -r . /app"
       - "desktop-file-edit --set-icon=$FLATPAK_ID --set-key=Exec --set-value=pokete assets/pokete.desktop"
       - "install -D assets/pokete.desktop /app/share/applications/com.github.lxgr_linux.pokete.desktop"
       - "install -D assets/pokete.svg /app/share/icons/hicolor/scalable/apps/com.github.lxgr_linux.pokete.svg"
       - "install -D assets/pokete.metainfo.xml /app/share/metainfo/com.github.lxgr_linux.pokete.metainfo.xml"
+      - "install -D wrapper.sh /app/bin/pokete"
       # Set Environment
       - "echo 'environment=\"flatpak\"' >> /app/release.py"
-      # Generate shell wrapper script
-      - "mkdir -p /app/bin"
-      - "echo 'cd /app && python3 pokete.py --log' >> /app/bin/pokete"
-      - "chmod +x /app/bin/pokete"
-    sources:
-      - type: archive
-        url: "https://github.com/lxgr-linux/pokete/archive/refs/tags/0.8.0.tar.gz"
-        sha256: "30d93eda42162ff75fd4e8c9df4508f879b431ce90347c4ea584ae6114749e59"
 
+    sources:
+      # pokete's game files
+      - type: archive
+        url: "https://github.com/lxgr-linux/pokete/archive/refs/tags/0.8.1.tar.gz"
+        sha256: "44477ca3153babfa705bd45239f34fd048f21025f061fe92051aee3accba6e1b"
+
+      # import the scrap_engine it is just one file and no other dependencies
+      - type: file
+        url: "https://raw.githubusercontent.com/lxgr-linux/scrap_engine/1.3.0/scrap_engine.py"
+        sha256: "7e1236307897d27243e854003e6580cd8d983994514e8d4750af1516b0ba794d"
+
+      # Sources used to re-bulid the playsound library
+      # this avoid glibc version errors
+      - type: archive
+        url: "https://github.com/hajimehoshi/oto/archive/refs/tags/v2.2.0.tar.gz"
+        sha256: "2138188978e144f87b99762654382a32b35d8fdfe06df4447d1663a92f031708"
+        dest: go-modules/src/github.com/hajimehoshi/oto/v2
+      - type: archive
+        url: "https://github.com/hajimehoshi/go-mp3/archive/refs/tags/v0.3.3.tar.gz"
+        sha256: "5f51d7e3484c868faead7482dcd8af6436302290cc05dfbef999f72cf54984af"
+        dest: go-modules/src/github.com/hajimehoshi/go-mp3
+
+      # The shell wrapper script to enable logging by default
+      - type: script
+        commands:
+          - "cd /app"
+          - "python3 pokete.py --log"
+        dest-filename: "wrapper.sh"
