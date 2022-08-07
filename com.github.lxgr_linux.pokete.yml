@@ -58,7 +58,7 @@ modules:
     sources:
       # pokete's game files
       - type: archive
-        url: "https://github.com/lxgr-linux/pokete/archive/refs/tags/0.8.2.tar.gz"
+        url: "https://github.com/lxgr-linux/pokete/archive/refs/tags/v0.8.2.tar.gz"
         sha256: "e1ee304143d25e68748be6f2c1dcea136372bdbc5279f376ae23710fc3e7decb"
 
       # import the scrap_engine it is just one file and no other dependencies
