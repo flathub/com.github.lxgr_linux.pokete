@@ -7,9 +7,6 @@ command: pokete
 
 finish-args:
   # Store save files and logs
-  # xdg-cache is for backwards compatibility reasons. New data is stored in xdg-data/pokete
-  - "--filesystem=xdg-cache/pokete:ro"
-  - "--filesystem=xdg-data/pokete:create"
   # Trading and update checking
   - "--share=network"
   # To display music
