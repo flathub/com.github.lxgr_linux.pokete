@@ -1,6 +1,6 @@
 app-id: com.github.lxgr_linux.pokete
 runtime: org.freedesktop.Platform
-runtime-version: '21.08'
+runtime-version: '23.08'
 sdk: org.freedesktop.Sdk
 sdk-extensions: ["org.freedesktop.Sdk.Extension.golang"]
 command: pokete
@@ -58,8 +58,8 @@ modules:
     sources:
       # pokete's game files
       - type: archive
-        url: "https://github.com/lxgr-linux/pokete/archive/refs/tags/0.9.0.tar.gz"
-        sha256: "2dea912827481f5bde1ba608aa73dea5466a4ada618b0946c1e7fe0f24162ac3"
+        url: "https://github.com/lxgr-linux/pokete/archive/refs/tags/0.9.1.tar.gz"
+        sha256: "302d51385f4a0f2fedc0d0368a49d5aa7020ad80cae47a69fde5919ebcb974fb"
 
       # import the scrap_engine it is just one file and no other dependencies
       - type: file
